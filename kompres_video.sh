@@ -16,23 +16,26 @@ if [ ! -f "$VIDEO_PATH" ]; then echo "\n❌ File tidak ditemukan. Pastikan path 
 
 ========================
 
-2. PILIH RESOLUSI OUTPUT
+ 2. Pilihan resolusi
+echo -e "\n🎯 Pilih resolusi output:"
+echo "1: 1080x1920 (Full HD Vertikal)"
+echo "2: 720x1280 (HD Vertikal)"
+echo "3: 480x854 (SD Vertikal)"
+echo "4: Samakan dengan resolusi asli"
+echo "5: Custom (masukkan manual)"
+read -p "Masukkan pilihan [1-5]: " res_choice
 
-========================
-
-echo "\nPilih resolusi output:" echo "1: 1080p" echo "2: 720p" echo "3: 480p" read -p "Masukkan angka [1-3]: " res_choice
-
-case $res_choice in
-
-1. scale="1920:1080";;
-
-
-2. scale="1280:720";;
-
-
-3. scale="854:480";; *) echo "Pilihan tidak valid, default ke 1080p"; scale="1920:1080";; esac
-
-
+case "$res_choice" in
+  1) scale_filter="-vf scale=1080:1920" ;;
+  2) scale_filter="-vf scale=720:1280" ;;
+  3) scale_filter="-vf scale=480:854" ;;
+  4) scale_filter="" ;;  # Tanpa filter, artinya pakai resolusi asli
+  5)
+    read -p "Masukkan resolusi custom (contoh: 1280x720): " custom_res
+    scale_filter="-vf scale=${custom_res/x/:}"
+    ;;
+  *) echo "❗ Pilihan tidak valid, gunakan resolusi asli."; scale_filter="" ;;
+esac
 
 ========================
 
