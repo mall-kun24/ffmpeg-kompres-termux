@@ -1,145 +1,102 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-clear
-termux-setup-storage
+========================
 
-SFX_OK="/storage/emulated/0/ffmpeg/sfx/MATTA MATTA SUOU YUKI.mp3"
-SFX_ERR="/storage/emulated/0/ffmpeg/sfx/Ara Ara Anime  Ara-Ara Kurumi  Message.mp3"
-OUTPUT_DIR="/storage/emulated/0/ffmpeg/kompresi/outputnya"
+1. PILIH VIDEO
 
-mkdir -p "$OUTPUT_DIR"
+========================
 
-# 1. PILIH FILE
-echo "📁 Pilih file video dari file manager..."
-pick=$(termux-dialog file)
-VIDEO_PATH=$(echo "$pick" | sed -n 's/.*"value":"\([^"]*\)".*/\1/p')
+echo "\n=============================" echo "     KOMPRESI VIDEO HD     " echo "=============================\n"
 
-if [ ! -f "$VIDEO_PATH" ]; then
-  echo "❌ File tidak ditemukan!"
-  termux-media-player play "$SFX_ERR"
-  exit 1
-fi
+Ganti file picker dengan input manual
 
-VIDEO_NAME=$(basename "$VIDEO_PATH")
-OUTPUT_PATH="$OUTPUT_DIR/[KOMPRES]$VIDEO_NAME"
+read -p "Masukkan path video (contoh: /storage/emulated/0/Download/video.mp4): " VIDEO_PATH
 
-# 2. PILIH RESOLUSI
-echo ""
-echo "Pilih resolusi:"
-echo "1: 1080x1920"
-echo "2: 720x1280"
-echo "3: 540x960"
-echo "4: 480x854"
-echo "5: Custom"
-read -p "Pilihan [1‑5]: " res_choice
+if [ ! -f "$VIDEO_PATH" ]; then echo "\n❌ File tidak ditemukan. Pastikan path benar." termux-media-player play "/storage/emulated/0/ffmpeg/sfx/Ara Ara Anime  Ara-Ara Kurumi  Message.mp3" exit 1 fi
+
+========================
+
+2. PILIH RESOLUSI OUTPUT
+
+========================
+
+echo "\nPilih resolusi output:" echo "1: 1080p" echo "2: 720p" echo "3: 480p" read -p "Masukkan angka [1-3]: " res_choice
+
 case $res_choice in
-  1) scale="1080:1920" ;;
-  2) scale="720:1280" ;;
-  3) scale="540:960" ;;
-  4) scale="480:854" ;;
-  5)
-    read -p "Masukkan width: " cw
-    read -p "Masukkan height: " ch
-    scale="${cw}:${ch}"
-    ;;
-  *) echo "Default ke 720x1280"; scale="720:1280" ;;
-esac
 
-# 3. PILIH FPS
-echo ""
-echo "Pilih FPS:"
-echo "1: 15"  
-echo "2: 30"
-echo "3: 60"
-echo "4: 120"
-read -p "Pilihan [1‑4]: " fpsc
-case $fpsc in
-  1) fps=15 ;;
-  2) fps=30 ;;
-  3) fps=60 ;;
-  4) fps=120 ;;
-  *) fps=30 ;;
-esac
+1. scale="1920:1080";;
 
-# 4. BITRATE
-echo ""
-read -p "Target bitrate (e.g. 5000 untuk 5000k): " br
-brr="${br}k"
 
-# 5. PILIH CODEC
-echo ""
-echo "Pilih codec:"
-echo "1: H.264 (libx264)"
-echo "2: H.265 (libx265)"
-read -p "Pilihan [1‑2]: " cc
-if [ "$cc" = "1" ]; then
-  vcodec="libx264"
-  echo "Pilih profil:"
-  echo "1: baseline"  
-  echo "2: main"
-  echo "3: high"
-  read -p "Pilihan [1‑3]: " pc
-  case $pc in
-    1) prof="baseline";;
-    2) prof="main";;
-    3) prof="high";;
-    *) prof="high";;
-  esac
-  echo "Pilih level H.264:"
-  echo "1: 3.1"  
-  echo "2: 4.0"
-  echo "3: 4.1"
-  echo "4: 4.2"
-  read -p "Pilihan [1‑4]: " lc
-  case $lc in
-    1) lvl="3.1" ;;
-    2) lvl="4.0" ;;
-    3) lvl="4.1" ;;
-    4) lvl="4.2" ;;
-    *) lvl="4.2" ;;
-  esac
-  codec_opts="-profile:v $prof -level $lvl -pix_fmt yuv420p"
-elif [ "$cc" = "2" ]; then
-  vcodec="libx265"
-  echo "Pilih bit depth:"
-  echo "1: 8-bit"
-  echo "2: 10-bit"
-  read -p "Pilihan [1‑2]: " bd
-  if [ "$bd" = "2" ]; then
-    codec_opts="-pix_fmt yuv420p10le"
-  else
-    codec_opts=""
-  fi
-else
-  vcodec="libx264"
-  codec_opts="-profile:v high -level 4.2 -pix_fmt yuv420p"
-fi
+2. scale="1280:720";;
 
-# 6. MULAI KOMPRES
-echo ""
-echo "🚀 Mulai kompres..."
-ffmpeg -i "$VIDEO_PATH" -c:v $vcodec $codec_opts -b:v "$brr" -preset veryfast -r $fps -vf scale=$scale -c:a copy "$OUTPUT_PATH"
-ec=$?
 
-# 7. CEK STATUS
-if [ $ec -eq 0 ]; then
-  echo "✅ Selesai!"
-  termux-media-player play "$SFX_OK"
+3. scale="854:480";; *) echo "Pilihan tidak valid, default ke 1080p"; scale="1920:1080";; esac
 
-  sb=$(stat -c%s "$VIDEO_PATH")
-  sa=$(stat -c%s "$OUTPUT_PATH")
-  perc=$(( (sb-sa)*100/sb ))
-  echo "📉 Dikompres sekitar $perc%"
 
-  echo ""
-  echo "Timpa file asli? 1=Ya / 2=Tidak"
-  read -p "Choice [1‑2]: " rep
-  if [ "$rep" = "1" ]; then
-    mv -f "$OUTPUT_PATH" "$VIDEO_PATH"
-    echo "✅ Asli sudah ditimpa."
-  fi
 
-else
-  echo "❌ Gagal!"
-  termux-media-player play "$SFX_ERR"
-fi
+========================
+
+3. PILIH FPS (30 / 60)
+
+========================
+
+echo "\nPilih frame rate (FPS):" echo "1: 30 fps" echo "2: 60 fps" read -p "Masukkan angka [1-2]: " fps_choice
+
+case $fps_choice in
+
+1. fps="30";;
+
+
+2. fps="60";; *) echo "Tidak valid. Default ke 30 fps."; fps="30";; esac
+
+
+
+========================
+
+4. PILIH BITRATE (dalam kbps)
+
+========================
+
+read -p "\nMasukkan target bitrate (contoh: 6000 untuk 6Mbps): " bitrate
+
+========================
+
+5. PILIH CODEC
+
+========================
+
+echo "\nPilih codec video:" echo "1: H.264 (libx264)" echo "2: H.265 (libx265)" read -p "Masukkan angka [1-2]: " codec_choice
+
+if [ "$codec_choice" = "1" ]; then vcodec="libx264" echo "\nPilih profile H.264:" echo "1: baseline" echo "2: main" echo "3: high" read -p "Masukkan angka [1-3]: " profile_choice case $profile_choice in 1) profile="baseline";; 2) profile="main";; 3) profile="high";; *) echo "Tidak valid. Gunakan 'main'."; profile="main";; esac
+
+echo "\nPilih level (misal: 3.1, 4.0, 4.1, 4.2):" read -p "Masukkan level (contoh: 4.2): " level [ -z "$level" ] && level="4.2"
+
+codec_extra="-profile:v $profile -level $level"
+
+elif [ "$codec_choice" = "2" ]; then vcodec="libx265" codec_extra="" else echo "Pilihan tidak valid. Gunakan H.264 (main)." vcodec="libx264" codec_extra="-profile:v main -level 4.2" fi
+
+========================
+
+6. SIAPKAN OUTPUT
+
+========================
+
+filename=$(basename -- "$VIDEO_PATH") name="${filename%.*}" output_folder="/storage/emulated/0/hasil_encode" mkdir -p "$output_folder" output_path="$output_folder/${name}_kompres.mp4"
+
+========================
+
+7. PROSES KOMPRESI
+
+========================
+
+echo "\n▶️ Mulai kompresi..." ffmpeg -i "$VIDEO_PATH" -c:v $vcodec -b:v ${bitrate}k -vf "scale=$scale,fps=$fps" 
+$codec_extra -preset fast -c:a copy -y "$output_path" -progress pipe:1 2>&1 | while IFS== read -r key value; do if [ "$key" = "progress" ] && [ "$value" = "end" ]; then echo "\n✅ Kompresi selesai!" termux-media-player play "/storage/emulated/0/ffmpeg/sfx/MATTA MATTA SUOU YUKI.mp3" echo "Video tersimpan di: $output_path" fi done
+
+========================
+
+8. OPSI TIMPA FILE
+
+========================
+
+echo "\nIngin timpa video asli? (y/n)" read -p "Jawaban: " overwrite_choice if [ "$overwrite_choice" = "y" ]; then mv -f "$output_path" "$VIDEO_PATH" echo "Video lama berhasil ditimpa." fi
+
