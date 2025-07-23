@@ -1,0 +1,170 @@
+
+# 🎬 FFmpeg Kompres Termux v5.1 by MARU け TEMPEST
+
+Skrip bash untuk mengompres video menggunakan FFmpeg langsung di Android melalui Termux (tanpa root). Mendukung **single** dan **batch mode**, lengkap dengan log, backup, dan suara notifikasi!
+
+---
+
+## 📦 Fitur Utama
+
+- Kompres video dengan resolusi, bitrate, codec, dan preset pilihan
+- Support codec H.264 (libx264) & H.265 (libx265, 8-bit & 10-bit)
+- Log otomatis
+- Opsi overwrite file asli
+- Folder hasil, backup, dan log terpisah
+- Notifikasi suara (opsional)
+
+---
+
+## 📲 Persyaratan
+
+- Android
+- Aplikasi Termux (disarankan dari [F-Droid](https://f-droid.org/en/packages/com.termux/))
+- Termux:API (juga dari F-Droid)
+- Koneksi internet (untuk clone repo dan install package)
+
+---
+
+## 🔧 Cara Instalasi
+
+### 1. **Update & Install Tools di Termux**
+
+Buka Termux dan jalankan:
+
+```bash
+pkg update && pkg upgrade -y
+pkg install git ffmpeg termux-api termux-media-player -y
+termux-setup-storage
+```
+
+> Saat ditanya izin akses penyimpanan, pilih **Izinkan**.
+
+---
+
+### 2. **Clone Repository**
+
+```bash
+git clone https://github.com/mall-kun24/ffmpeg-kompres-termux.git
+cd ffmpeg-kompres-termux
+```
+
+---
+
+### 3. **Jadikan Skrip Bisa Dieksekusi**
+
+```bash
+chmod +x ffmpeg_kompres_v5.1_official.sh
+```
+
+---
+
+### 4. **Jalankan Skrip**
+
+```bash
+./ffmpeg_kompres_v5.1_official.sh
+```
+
+---
+
+## 📁 Struktur Folder Output
+
+| Folder | Fungsi |
+|--------|--------|
+| `/storage/emulated/0/ffmpeg/kompresi` | Tempat video hasil kompresi |
+| `/storage/emulated/0/ffmpeg/backup`   | Tempat backup file asli |
+| `/storage/emulated/0/ffmpeg/logs`     | Log proses kompresi |
+| `/storage/emulated/0/ffmpeg/sfx`      | File suara notifikasi (opsional) |
+
+---
+
+## 🔊 Suara Notifikasi (Opsional)
+
+Jika ingin memakai suara saat error atau selesai kompresi:
+
+1. Buat folder:
+   ```
+   /storage/emulated/0/ffmpeg/sfx
+   ```
+
+2. Masukkan file MP3 seperti:
+   - `Ara_Ara_Anime_Ara_Ara_Kurumi_Message.mp3`
+   - `MATTA_MATTA_SUOU_YUKI.mp3`
+
+> Suara akan dimainkan menggunakan `termux-media-player` (bagian dari `termux-api`).
+
+---
+
+## ✅ Contoh Jalur Video Input
+
+Masukkan path video seperti:
+```
+/sdcard/video.mp4
+```
+atau
+```
+/storage/emulated/0/DCIM/Camera/VID_123.mp4
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+- ❌ **Command not found** saat `termux-media-player` → Pastikan `termux-api` sudah diinstal dan `termux-api` app juga ada di HP.
+- ❌ **Permission denied** akses folder → Jalankan `termux-setup-storage` dan pastikan Termux diizinkan mengakses penyimpanan.
+
+---
+
+## 🙏 Kredit
+
+- Dibuat oleh: **MARU け TEMPEST**
+- TikTok: [@marutempesto](https://tiktok.com/@marutempesto)
+- Instagram: `@mall_kun24`
+
+---
+
+## 📝 Lisensi
+
+Skrip ini bebas digunakan, dimodifikasi, dan dibagikan. Jangan lupa kasih kredit 😉
+
+
+---
+
+## 📲 Menjalankan Skrip via Termux Widget (Tanpa Root)
+
+Ingin jalankan skrip dengan 1 klik dari homescreen? Gunakan Termux Widget!
+
+### ✅ Bisa digunakan tanpa root
+
+### 🔧 Cara Setup:
+
+1. **Install Termux Widget**
+```bash
+pkg install termux-widget -y
+```
+
+2. **Buat folder untuk widget**
+```bash
+mkdir -p ~/.shortcuts
+```
+
+3. **Salin skrip ke folder tersebut**
+```bash
+cp ffmpeg_kompres_v5.1_official.sh ~/.shortcuts/
+chmod +x ~/.shortcuts/ffmpeg_kompres_v5.1_official.sh
+```
+
+4. **Tambahkan widget di homescreen**
+- Tekan lama di homescreen Android
+- Pilih menu **Widget**
+- Cari dan seret **Termux Widget**
+- Skrip akan muncul sebagai tombol di widget
+
+Sekarang kamu tinggal klik ikon widget untuk langsung menjalankan proses kompresi dari homescreen!
+
+---
+
+## ⚠️ Catatan Akses Folder Termux
+
+- Direktori Termux: `/data/data/com.termux/` bisa diakses **penuh dari dalam Termux**
+- **Tidak bisa diakses oleh file manager atau app lain tanpa root**
+- Simpan file output ke `/sdcard/` jika ingin mengakses dari luar Termux
